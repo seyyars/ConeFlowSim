@@ -69,3 +69,4 @@ def wedge_plot(M1=3.0, theta_deg=10.0, L=1.0):
     )
     fig.tight_layout()
     return fig, axs
+

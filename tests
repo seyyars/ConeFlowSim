@@ -1,0 +1,9 @@
+# tests/test_taylormaccoll.py
+import numpy as np
+from coneflowsim.taylormaccoll import solve_cone
+
+def test_tm_monotonic_M():
+    theta, F, G, M, p_over_p1 = solve_cone(M1=3.0, theta_deg=10.0)
+    # ماخ باید در جهت پایین‌دست به طور یکنوا کاهش یا افزایش یکنوا داشته باشد
+    dM = np.diff(M)
+    assert np.all(dM <= 0.0 + 1e-6) or np.all(dM >= 0.0 - 1e-6)

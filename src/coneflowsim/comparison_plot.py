@@ -1,3 +1,19 @@
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+
+from .wedge import wedge_field
+from .taylormaccoll import cone_field_tm, GAMMA_DEFAULT
+
+
+def comparison_plot(
+    M1: float = 3.0,
+    theta_deg: float = 10.0,
+    gamma: float = GAMMA_DEFAULT,
+    L: float = 1.0,
+    nx: int = 200,
+    ny: int = 200,
+):
 # همچنان داخل taylormaccoll.py یا اگر دوست داری در فایل جدا:
 from .wedge import wedge_field
 

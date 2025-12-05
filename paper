@@ -1,0 +1,203 @@
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Packages ----------
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bm}
+
+\title{ConeFlowSim: an educational Python tool for supersonic flow over sharp cones}
+\author{Seyed Arsham Asgari\thanks{Independent researcher. Email: s.a.asg2000@gmail.com}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+ConeFlowSim is a small, open-source Python tool for studying supersonic flow over sharp cones.
+The code couples two classical models: a weak oblique-shock (wedge) approximation and the
+Taylor--Maccoll conical flow equations for a polytropic gas.
+Despite its simplicity, ConeFlowSim produces physically meaningful Mach and pressure fields
+between the cone surface and the conical shock, and provides side-by-side comparison plots
+that are suitable for teaching and early-stage design studies.
+This note summarizes the governing equations, numerical implementation, and example results,
+and highlights the potential of ConeFlowSim as a reproducible reference implementation
+for educational and research use.
+\end{abstract}
+
+\section{Introduction}
+Supersonic flow over sharp cones is a classical topic in compressible aerodynamics.
+The flow field combines an axisymmetric conical shock with a nearly self-similar
+subsonic or transonic region between the shock and the cone surface.
+Analytical and semi-analytical models, such as the wedge (two-dimensional oblique-shock)
+approximation and the Taylor--Maccoll conical flow equations, provide insight into the
+structure of the flow and the sensitivity to Mach number, cone angle, and gas properties.
+
+High-fidelity numerical simulations based on finite-volume or finite-element methods
+are widely used for detailed design studies, but they are often too heavy for use in
+introductory courses or rapid parameter studies. There is therefore value in
+lightweight, script-level tools that implement simplified but physically meaningful
+models and expose them through a transparent Python API.
+
+This note presents \emph{ConeFlowSim}, an educational Python tool that:
+(i) implements a weak oblique-shock approximation for a cone,
+(ii) solves the Taylor--Maccoll equations using an explicit Runge--Kutta integrator, and
+(iii) constructs two-dimensional Mach and pressure fields between the cone surface and
+the conical shock, together with publication-quality plots for comparison between
+the two models.
+
+\section{Governing models}
+We consider a perfect gas with ratio of specific heats $\gamma$ and an upstream
+uniform supersonic flow with Mach number $M_1$.
+The cone has half-angle $\theta_c$ and its apex coincides with the origin.
+All lengths are scaled so that the axial extent of the computational domain is~$L$.
+
+\subsection{Wedge / oblique-shock approximation}
+For small cone angles it is common to approximate the axisymmetric conical flow by
+a two-dimensional wedge-flow with deflection angle $\theta_c$.
+Given $M_1$, $\theta_c$ and $\gamma$, the weak oblique-shock solution yields the
+shock angle $\beta$ and the downstream Mach number $M_2$ together with the
+pressure and temperature ratios across the shock.
+Standard compressible-flow relations are used; ConeFlowSim collects these into a
+function \texttt{oblique\_shock}.
+
+To construct a simple field between the cone surface and the shock, the physical
+domain is mapped to a normalized $(x,r)$ plane, where $x \in [0,1]$ is the
+streamwise coordinate and $r$ is the radial coordinate normalized by $x$.
+The cone surface corresponds to $r = \tan \theta_c$, and the shock to
+$r = \tan \beta$.
+The wedge model assumes that all flow quantities depend only on the polar angle
+between these two boundaries, which leads to a piecewise-constant field of $M$
+and $p/p_1$ between the cone and the shock.
+
+\subsection{Taylor--Maccoll conical flow}
+A more accurate description of the axisymmetric conical flow is obtained from
+the Taylor--Maccoll equations, which follow from the steady Euler equations
+under the assumption of self-similar conical flow.
+Using a polar angle $\theta$ measured from the symmetry axis and a suitable
+non-dimensionalization, the radial velocity component can be written in terms
+of a dimensionless function $F(\theta)$.
+For a polytropic gas, the governing second-order nonlinear ordinary differential
+equation for $F$ can be written in the form
+\begin{equation}
+\bigl[ a(F;\gamma) \bigr] F''(\theta)
+ = b(F,F';\theta,\gamma),
+\label{eq:TM}
+\end{equation}
+where $a$ and $b$ collect the standard Taylor--Maccoll coefficients.
+The local Mach number $M(\theta)$ and the static pressure $p(\theta)$ follow
+from $F$ via the usual isentropic relations.
+
+In practice, the ODE~\eqref{eq:TM} is rewritten as a first-order system for
+the state vector $y=(F,F_\theta)$ and integrated from the shock angle
+$\theta=\beta$ down to the cone angle $\theta=\theta_c$.
+The initial conditions at the shock are obtained from the oblique-shock
+relations using the assumption that the flow is aligned with the cone
+surface at $\theta=\theta_c$.
+
+\section{Numerical implementation}
+ConeFlowSim is implemented in pure Python and organized as a small package
+under \texttt{src/coneflowsim}. The numerical core relies only on
+\texttt{NumPy}, \texttt{SciPy} and \texttt{Matplotlib}.
+
+The Taylor--Maccoll ODE is integrated using an explicit classical
+fourth-order Runge--Kutta scheme on a uniform grid in~$\theta$.
+For typical parameters $(M_1,\theta_c)=(3.0,10^\circ)$ a few hundred steps
+are sufficient to obtain smooth profiles of $M(\theta)$ and $p(\theta)/p_1$.
+The wedge and Taylor--Maccoll solvers share a common upstream state and gas
+model, which facilitates direct comparison between the two models.
+
+The two-dimensional fields in the $(x,r)$ plane are constructed by discretizing
+the streamwise coordinate $x \in [0,L]$ and interpolating the one-dimensional
+profiles to the polar angle associated with each grid point.
+The current implementation uses a simple nearest-neighbour mapping, which is
+sufficient for educational plots and can easily be refined in future work.
+
+\section{Example results}
+All figures in this section were generated using the public \texttt{cone\_demo.py}
+script distributed with ConeFlowSim. The example considers a cone with
+half-angle $\theta_c = 10^\circ$ in a free stream with $M_1 = 3.0$ and
+$\gamma = 1.4$.
+
+\subsection{Taylor--Maccoll profiles}
+Figure~\ref{fig:tm-profile} shows the static Mach number $M(\theta)$ obtained
+from the Taylor--Maccoll solver as a function of the polar angle between the
+shock and the cone surface. As expected, the Mach number decreases monotonically
+from the post-shock value near $\theta=\beta$ to a subsonic value close to the
+cone surface.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.6\textwidth]{figures/tm_mach_profile.png}
+  \caption{Taylor--Maccoll Mach number profile for $M_1=3.0$ and
+  $\theta_c=10^\circ$.}
+  \label{fig:tm-profile}
+\end{figure}
+
+\subsection{Wedge model fields}
+Figure~\ref{fig:wedge-fields} presents the Mach number and pressure ratio
+$p/p_1$ in the $(x,r)$ plane for the wedge approximation.
+The cone surface and the shock are plotted as solid and dashed lines, respectively.
+Although the fields are piecewise uniform, they already provide a useful visual
+representation of the conical flow and the location of the shock.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/wedge_fields.png}
+  \caption{Mach number and pressure ratio $p/p_1$ between the cone surface and
+  the shock for the wedge model.}
+  \label{fig:wedge-fields}
+\end{figure}
+
+\subsection{Comparison between wedge and Taylor--Maccoll fields}
+Finally, Fig.~\ref{fig:comparison} compares the wedge and Taylor--Maccoll
+fields side by side for both Mach number and pressure ratio.
+The wedge model tends to overpredict the Mach number in the interior of the
+flow region and underpredict the pressure on the cone surface, especially for
+larger cone angles. The Taylor--Maccoll solution captures the smooth variation
+of the flow quantities and can therefore serve as a more accurate reference
+for educational and design purposes.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/wedge_vs_tm_fields.png}
+  \caption{Side-by-side comparison of Mach number and pressure ratio $p/p_1$
+  for the wedge and Taylor--Maccoll models.}
+  \label{fig:comparison}
+\end{figure}
+
+\section{Reuse potential and educational value}
+ConeFlowSim is intentionally small and readable; the entire Taylor--Maccoll
+solver fits in a few dozen lines of Python.
+This makes the code suitable for use in graduate-level courses on compressible
+flow, as well as for self-study and for rapid feasibility studies in early
+design phases.
+
+Possible extensions include:
+\begin{itemize}
+  \item incorporating real-gas effects or temperature-dependent $\gamma$;
+  \item adding graphical user interfaces or Jupyter widgets for interactive use;
+  \item coupling the conical flow model to simple aerodynamic force estimates.
+\end{itemize}
+
+\section{Conclusions}
+This note has presented ConeFlowSim, an open-source Python tool for studying
+supersonic flow over sharp cones using both a wedge approximation and the
+Taylor--Maccoll conical flow equations.
+The tool provides transparent reference implementations of classical models
+and generates publication-quality plots that can be used directly in teaching
+material and research articles.
+Future work will focus on extending the range of models and adding more
+benchmark cases.
+
+\section*{Acknowledgements}
+The author gratefully acknowledges the use of open-source scientific Python
+software and the feedback from early users of ConeFlowSim.
+
+\bibliographystyle{plain}
+% \bibliography{coneflowsim} % <-- اضافه کردن فایل bib در صورت نیاز
+
+\end{document}

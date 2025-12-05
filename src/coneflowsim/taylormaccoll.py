@@ -26,7 +26,6 @@ def taylor_maccoll_rhs(theta: float,
     """
     F, Fp = y  # F, F'
 
-    # coefficients
     A = 0.5 * (gamma + 1.0) * Fp**2 - 0.5 * (gamma - 1.0) * (1.0 - F**2)
     cot_th = 1.0 / math.tan(theta)
 
@@ -37,10 +36,7 @@ def taylor_maccoll_rhs(theta: float,
         - 0.5 * (gamma - 1.0) * cot_th * Fp**3
     )
 
-    # dF/dtheta = F'
     dF_dtheta = Fp
-
-    # dF'/dtheta = F'' = RHS / A
     dFp_dtheta = RHS / A
 
     return np.array([dF_dtheta, dFp_dtheta])

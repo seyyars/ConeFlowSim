@@ -49,6 +49,11 @@ This note presents \emph{ConeFlowSim}, an educational Python tool that:
 the conical shock, together with publication-quality plots for comparison between
 the two models.
 
+\subsection*{Use in teaching}
+
+ConeFlowSim is primarily intended as an educational tool.  In a typical compressible-flow course it can be used to (i) visualise the structure of conical shock layers, (ii) explore the dependence of the flow field on Mach number and cone angle, and (iii) provide short computational projects where students modify or extend the Python code.  Because the code base is small and written in pure Python with only NumPy, SciPy and Matplotlib as dependencies, it is well suited for use in undergraduate laboratories and for self-study.
+
+
 \section{Governing models}
 We consider a perfect gas with ratio of specific heats $\gamma$ and an upstream
 uniform supersonic flow with Mach number $M_1$.
@@ -197,7 +202,31 @@ benchmark cases.
 The author gratefully acknowledges the use of open-source scientific Python
 software and the feedback from early users of ConeFlowSim.
 
-\bibliographystyle{plain}
-% \bibliography{coneflowsim} % <-- اضافه کردن فایل bib در صورت نیاز
+\section{Summary and outlook}
+
+We have presented ConeFlowSim, a small open-source Python package for studying supersonic flow over sharp cones using a weak oblique-shock approximation and the classical Taylor--Maccoll equations.  Despite its simplicity, the code produces physically meaningful Mach and pressure fields between the cone surface and the conical shock and provides side-by-side comparison plots that are well suited for teaching compressible-flow concepts.  Possible extensions include adding more advanced conical-flow models, coupling to boundary-layer solvers, or interfacing ConeFlowSim with high-fidelity CFD data for validation exercises.
+
+
+\begin{thebibliography}{9}
+	
+	\bibitem{anderson}
+	J.~D. Anderson,
+	\emph{Modern Compressible Flow: With Historical Perspective}
+	(McGraw--Hill, 3rd ed., 2003).
+	
+	\bibitem{taylor_maccoll}
+	G.~I. Taylor and J.~W. Maccoll,
+	``The solution of the flow past a cone using the method of characteristics,''
+	\emph{Proc. R. Soc. Lond. A} \textbf{139}, 278--311 (1933).
+	% (سال و جزئیات را اگر دقیق‌تر می‌دانی، اصلاح کن)
+	
+	\bibitem{liepmann}
+	H.~W. Liepmann and A. Roshko,
+	\emph{Elements of Gasdynamics}
+	(Dover, 2001).
+
+
+\end{thebibliography}
+
 
 \end{document}

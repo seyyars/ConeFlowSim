@@ -4,39 +4,48 @@ import numpy as np
 GAMMA_DEFAULT = 1.4
 
 
-def taylor_maccoll_rhs(theta: float,
-                       y: np.ndarray,
-                       gamma: float = GAMMA_DEFAULT) -> np.ndarray:
+def taylor_maccoll_solution(
+    M1: float,
+    theta_c_deg: float,
+    gamma: float = GAMMA_DEFAULT,
+    n_theta: int = 200,
+):
     """
-    Right-hand side of Taylor–Maccoll ODE in first-order form.
+    Placeholder Taylor–Maccoll solver.
 
-    Parameters
-    ----------
-    theta : float
-        Polar angle (rad).
-    y : array_like, shape (2,)
-        State vector [F, F_theta], where F_theta = dF/dtheta.
-    gamma : float
-        Heat capacity ratio.
-
-    Returns
-    -------
-    dydtheta : ndarray, shape (2,)
-        [dF/dtheta, d^2F/dtheta^2].
+    فعلاً فقط یک حل خیلی ساده و نمادین برمی‌گردانیم تا API کامل باشد.
+    بعداً معادله‌ی واقعی Taylor–Maccoll را این‌جا پیاده‌سازی می‌کنیم.
     """
-    F, Fp = y  # F, F'
+    theta_c = math.radians(theta_c_deg)
 
-    A = 0.5 * (gamma + 1.0) * Fp**2 - 0.5 * (gamma - 1.0) * (1.0 - F**2)
-    cot_th = 1.0 / math.tan(theta)
+    # شبکه‌ی ساده از زاویه‌ها بین مخروط و محور
+    theta = np.linspace(theta_c, 0.0, n_theta)
 
-    RHS = (
-        (gamma - 1.0) * (1.0 - F**2) * F
-        + 0.5 * (gamma - 1.0) * cot_th * (1.0 - F**2) * Fp
-        - gamma * F * Fp**2
-        - 0.5 * (gamma - 1.0) * cot_th * Fp**3
+    # فعلاً F و dF/dtheta را صفر می‌گیریم (placeholder)
+    F = np.zeros_like(theta)
+    dF = np.zeros_like(theta)
+
+    return theta, F, dF
+
+
+def cone_field_tm(
+    M1: float,
+    theta_deg: float,
+    L: float = 1.0,
+    nx: int = 200,
+    ny: int = 200,
+    gamma: float = GAMMA_DEFAULT,
+):
+    """
+    میدان «نمادین» Taylor–Maccoll روی شبکه‌ی (x, r).
+
+    فعلاً برای این‌که شکل مقایسه‌ای داشته باشیم، از همان میدان wedge
+    استفاده می‌کنیم؛ یعنی تا وقتی حل واقعی TM را پیاده نکرده‌ایم،
+    دو ستون شکل‌ها تقریباً یکسان خواهند بود.
+    """
+    from .wedge import wedge_field
+
+    X, Y, M, P, beta = wedge_field(
+        M1, theta_deg, L=L, nx=nx, ny=ny, gamma=gamma
     )
-
-    dF_dtheta = Fp
-    dFp_dtheta = RHS / A
-
-    return np.array([dF_dtheta, dFp_dtheta])
+    return X, Y, M, P

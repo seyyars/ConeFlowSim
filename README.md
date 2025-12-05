@@ -1,3 +1,8 @@
+If you use ConeFlowSim in your work, please cite:
+
+S. A. Asgari, *ConeFlowSim v1.0.1*, Zenodo (software), 2025.
+doi:10.5281/zenodo.17833232
+
 # ConeFlowSim
 
 Educational Python tools for supersonic flow over sharp cones.

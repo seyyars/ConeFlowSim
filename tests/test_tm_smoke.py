@@ -1,3 +1,4 @@
+import pytest
 import numpy as np
 from coneflowsim.taylormaccoll import solve_cone, cone_field_tm
 from coneflowsim import wedge_field

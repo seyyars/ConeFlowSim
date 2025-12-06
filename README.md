@@ -26,15 +26,15 @@ Repository layout:
 
 ```text
 ConeFlowSim/
- ├─ src/coneflowsim/
- │   ├─ wedge.py          # oblique shock + wedge field
- │   ├─ taylormaccoll.py  # Taylor–Maccoll ODE + cone field
- │   ├─ comparison_plot.py# wedge vs TM comparison figure
- │   └─ __init__.py
- ├─ examples/
- │   └─ cone_demo.py      # end-to-end demo script
- ├─ tests/
- │   └─ test_tm_smoke.py  # basic smoke test for the TM solver
- ├─ figures/              # (created by the examples)
- ├─ LICENSE               # MIT
- └─ README.md
+├ paper/              # LaTeX article (coneflowsim-paper.tex)
+├ src/coneflowsim/    # Python package (wedge + Taylor–Maccoll + plots)
+│   ├ wedge.py
+│   ├ taylormaccoll.py
+│   ├ comparison_plot.py
+│   └ __init__.py
+├ tests/
+│   └ test_tm_smoke.py  # basic smoke test for the TM solver
+├ CITATION.cff        # citation metadata
+├ refs.bib            # BibTeX entry for the Zenodo record
+├ LICENSE             # MIT
+└ README.md

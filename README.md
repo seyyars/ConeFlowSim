@@ -1,7 +1,8 @@
 If you use ConeFlowSim in your work, please cite:
 
-S. A. Asgari, *ConeFlowSim v1.0.1*, Zenodo (software), 2025.
-doi:10.5281/zenodo.17833232
+S. A. Asgari, ConeFlowSim (Version 1.0.1) [Computer software], Zenodo, 2025.
+https://doi.org/10.5281/zenodo.17833232
+
 
 # ConeFlowSim
 

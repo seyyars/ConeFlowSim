@@ -46,8 +46,8 @@ def oblique_shock(
         return math.tan(theta) - rhs
 
     # --- robust bracketing for the weak solution in (theta, pi/2) -----------
-    beta_min = theta + math.radians(0.1)          # کمی بالاتر از theta
-    beta_max = 0.5 * math.pi - math.radians(0.1)  # کمی کمتر از 90 درجه
+    beta_min = theta + math.radians(0.1)         
+    beta_max = 0.5 * math.pi - math.radians(0.1)  
 
     betas = np.linspace(beta_min, beta_max, 400)
     vals = [f(b) for b in betas]
